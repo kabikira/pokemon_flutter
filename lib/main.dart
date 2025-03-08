@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pokemon_flutter/poke_detail.dart';
+import 'package:pokemon_flutter/poke_list_item.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,56 +16,23 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(),
+      home: const TopPage(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+class TopPage extends StatelessWidget {
+  const TopPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(32),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(32),
-                    child: Image.network(
-                      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png",
-                      height: 100,
-                      width: 100,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    child: const Text(
-                      'No.25',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const Text(
-                'pikachu',
-                style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-              ),
-              const Chip(
-                label: Text('electric'),
-                backgroundColor: Colors.yellow,
-              ),
-            ],
-          ),
-        ),
+      body: ListView(
+        children:
+            List.generate(
+              10000,
+              (id) => id,
+            ).map((val) => PokeListItem(index: val)).toList(),
       ),
     );
   }
