@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pokemon_flutter/poke_detail.dart';
 import 'package:pokemon_flutter/poke_list_item.dart';
 
 void main() {
@@ -12,10 +11,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      title: 'Pokemon Flutter',
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.system,
       home: const TopPage(),
     );
   }
