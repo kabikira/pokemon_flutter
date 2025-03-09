@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:pokemon_flutter/poke_list_item.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pokemon_flutter/poke_list.dart';
+import 'package:pokemon_flutter/settings.dart';
+import 'package:pokemon_flutter/utils/theme_mode.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -55,69 +56,6 @@ class _TopPageState extends State<TopPage> {
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'setting'),
         ],
       ),
-    );
-  }
-}
-
-class PokeList extends StatelessWidget {
-  const PokeList({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-      itemCount: 1010,
-      itemBuilder: (context, index) => PokeListItem(index: index),
-    );
-  }
-}
-
-class Settings extends StatefulWidget {
-  const Settings({super.key});
-  @override
-  _SettingsState createState() => _SettingsState();
-}
-
-class _SettingsState extends State<Settings> {
-  ThemeMode _themeMode = ThemeMode.system;
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        ListTile(
-          leading: const Icon(Icons.lightbulb),
-          title: const Text('Dark/Light Mode'),
-          trailing: Text(
-            (_themeMode == ThemeMode.system)
-                ? 'System'
-                : (_themeMode == ThemeMode.dark ? 'Dark' : 'Light'),
-          ),
-          onTap: () async {
-            var ret = await Navigator.of(context).push<ThemeMode>(
-              MaterialPageRoute(
-                builder: (context) => ThemeModeSelectionPage(mode: _themeMode),
-              ),
-            );
-            setState(() => _themeMode = ret!);
-            await saveThemeMode(_themeMode);
-          },
-        ),
-        SwitchListTile(
-          title: const Text('Switch'),
-          value: true,
-          onChanged: (yes) => {},
-        ),
-        CheckboxListTile(
-          title: const Text('Checkbox'),
-          value: true,
-          onChanged: (yes) => {},
-        ),
-        RadioListTile(
-          title: const Text('Radio'),
-          value: true,
-          groupValue: true,
-          onChanged: (yes) => {},
-        ),
-      ],
     );
   }
 }
@@ -173,25 +111,4 @@ class _ThemeModeSelectionPage extends State<ThemeModeSelectionPage> {
       ),
     );
   }
-}
-
-const ThemeMode defaultTheme = ThemeMode.system;
-
-Future<void> saveThemeMode(ThemeMode mode) async {
-  final pref = await SharedPreferences.getInstance();
-  pref.setString(mode.key, mode.name);
-}
-
-Future<ThemeMode> loadThemeMode() async {
-  final pref = await SharedPreferences.getInstance();
-  return toMode(pref.getString(defaultTheme.key) ?? defaultTheme.name);
-}
-
-ThemeMode toMode(String str) {
-  return ThemeMode.values.where((val) => val.name == str).first;
-}
-
-extension ThemeModeEx on ThemeMode {
-  String get key => toString().split('.').first;
-  String get name => toString().split('.').last;
 }
