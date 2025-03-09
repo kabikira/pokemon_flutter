@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:pokemon_flutter/models/theme_mode.dart';
 import 'package:pokemon_flutter/poke_list.dart';
 import 'package:pokemon_flutter/settings.dart';
-import 'package:pokemon_flutter/utils/theme_mode.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final SharedPreferences pref = await SharedPreferences.getInstance();
+  final themeModeNotifier = ThemeModeNotifier(pref);
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => themeModeNotifier,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -14,22 +24,25 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode themeMode = ThemeMode.system;
-
-  @override
-  void initState() {
-    super.initState();
-    loadThemeMode().then((val) => setState(() => themeMode = val));
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Pokemon Flutter',
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      themeMode: themeMode,
-      home: const TopPage(),
+    /*
+    この実装の美味しいところはこの mode に対するアクセスが完全に同期的であり、
+    かつその設定値がどこに保存されているのか、どうやって取り出されるのかがすべてブラックボックス化されているところです。
+    MaterialApp としては、「ThemeModeNotifier がもっている mode を取得した」という認知しかなく、
+    その裏で SharedPreferences が使われているか SQLite か Firebase かといったことはまったく気にしなくて良いのです。
+    このような設計は View と Model の切り離しとしてよく知られており、MVVM と呼ばれています。
+    これ、とっっっっっても大事です。
+    */
+    return Consumer<ThemeModeNotifier>(
+      builder:
+          (context, mode, child) => MaterialApp(
+            title: 'Pokemon Flutter',
+            theme: ThemeData.light(),
+            darkTheme: ThemeData.dark(),
+            themeMode: mode.mode,
+            home: const TopPage(),
+          ),
     );
   }
 }
@@ -85,7 +98,12 @@ class _ThemeModeSelectionPage extends State<ThemeModeSelectionPage> {
             ListTile(
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
-                onPressed: () => Navigator.pop<ThemeMode>(context, _current),
+                onPressed: () {
+                  context.read<ThemeModeNotifier>().update(
+                    _current,
+                  ); // 修正: ThemeModeNotifier に反映
+                  Navigator.pop(context, _current);
+                },
               ),
             ),
             RadioListTile<ThemeMode>(
