@@ -12,6 +12,7 @@ dependencies:
     sdk: flutter
   shared_preferences: 
   provider: 
+  http: 
 
   cupertino_icons: ^1.0.8
 

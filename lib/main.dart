@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokemon_flutter/models/pokemon.dart';
 import 'package:pokemon_flutter/models/theme_mode.dart';
 import 'package:pokemon_flutter/poke_list.dart';
 import 'package:pokemon_flutter/settings.dart';
@@ -9,9 +10,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final SharedPreferences pref = await SharedPreferences.getInstance();
   final themeModeNotifier = ThemeModeNotifier(pref);
+  final pokemonsNotifier = PokemonsNotifier();
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => themeModeNotifier,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => themeModeNotifier),
+        ChangeNotifierProvider(create: (context) => pokemonsNotifier),
+      ],
       child: const MyApp(),
     ),
   );
@@ -99,9 +104,7 @@ class _ThemeModeSelectionPage extends State<ThemeModeSelectionPage> {
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  context.read<ThemeModeNotifier>().update(
-                    _current,
-                  ); // 修正: ThemeModeNotifier に反映
+                  context.read<ThemeModeNotifier>().update(_current);
                   Navigator.pop(context, _current);
                 },
               ),
