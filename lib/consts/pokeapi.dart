@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 const int pokeMaxId = 1010;
+const int pageSize = 30;
+
 const String pokeApiRoute = "https://pokeapi.co/api/v2/";
 const Map<String, Color> pokeTypeColors = {
   "normal": Color(0xFFA8A77A),
