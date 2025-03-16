@@ -8,7 +8,7 @@ class FavoritesDb {
     return await openDatabase(
       join(await getDatabasesPath(), favFileName),
       onCreate: (db, version) {
-        return db.execute('CREATE TABLE $favFileName(id INTEGER PRIMARY KEY)');
+        return db.execute('CREATE TABLE $favTableName(id INTEGER PRIMARY KEY)');
       },
       version: 1,
     );
@@ -25,7 +25,7 @@ class FavoritesDb {
 
   static Future<List<Favorite>> read() async {
     var db = await openDb();
-    final List<Map<String, dynamic>> maps = await db.query(favFileName);
+    final List<Map<String, dynamic>> maps = await db.query(favTableName);
     return List.generate(maps.length, (index) {
       return Favorite(pokeId: maps[index]['id']);
     });

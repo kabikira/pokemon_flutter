@@ -23,7 +23,7 @@ class PokeListItem extends StatelessWidget {
           ),
         ),
         title: Text(
-          'Pikachu',
+          poke!.name,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         subtitle: Text(poke!.types.first),
