@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 
 class ViewModeBottomSheet extends StatelessWidget {
-  const ViewModeBottomSheet({Key? key, required this.favMode})
-    : super(key: key);
+  const ViewModeBottomSheet({
+    super.key,
+    required this.favMode,
+    required this.changeFavMode,
+    required this.gridMode,
+    required this.changeGridMode,
+  });
   final bool favMode;
-
+  final Function(bool) changeFavMode;
+  final bool gridMode;
+  final Function(bool) changeGridMode;
   String mainText(bool fav) {
-    if (fav) {
-      return 'お気に入りのポケモンが表示されています';
-    } else {
-      return 'すべてのポケモンが表示されています';
-    }
+    return '表示設定';
   }
 
-  String menuTitle(bool fav) {
+  String menuFavTitle(bool fav) {
     if (fav) {
       return '「すべて」表示に切り替え';
     } else {
@@ -21,11 +24,27 @@ class ViewModeBottomSheet extends StatelessWidget {
     }
   }
 
-  String menuSubtitle(bool fav) {
+  String menuFavSubtitle(bool fav) {
     if (fav) {
-      return 'すべてのポケモンが表示されます';
+      return '全てのポケモンが表示されます';
     } else {
       return 'お気に入りに登録したポケモンのみが表示されます';
+    }
+  }
+
+  String menuGridTitle(bool grid) {
+    if (grid) {
+      return 'リスト表示に切り替え';
+    } else {
+      return 'グリッド表示に切り替え';
+    }
+  }
+
+  String menuGridSubtitle(bool grid) {
+    if (grid) {
+      return 'ポケモンをグリッド表示します';
+    } else {
+      return 'ポケモンをリスト表示します';
     }
   }
 
@@ -57,10 +76,20 @@ class ViewModeBottomSheet extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.swap_horiz),
-              title: Text(menuTitle(favMode)),
-              subtitle: Text(menuSubtitle(favMode)),
+              title: Text(menuFavTitle(favMode)),
+              subtitle: Text(menuFavSubtitle(favMode)),
               onTap: () {
-                Navigator.pop(context, true);
+                changeFavMode(favMode);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.grid_3x3),
+              title: Text(menuGridTitle(gridMode)),
+              subtitle: Text(menuGridSubtitle(gridMode)),
+              onTap: () {
+                changeGridMode(gridMode);
+                Navigator.pop(context);
               },
             ),
             OutlinedButton(

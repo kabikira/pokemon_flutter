@@ -1,5 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:pokemon_flutter/consts/pokeapi.dart';
+import 'package:pokemon_flutter/const/pokeapi.dart';
 import 'package:pokemon_flutter/models/pokemon.dart';
 import 'package:pokemon_flutter/poke_detail.dart';
 
@@ -18,7 +19,7 @@ class PokeListItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
               fit: BoxFit.fitWidth,
-              image: NetworkImage(poke!.imageUrl),
+              image: CachedNetworkImageProvider(poke!.imageUrl),
             ),
           ),
         ),

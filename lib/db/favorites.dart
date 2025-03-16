@@ -1,4 +1,4 @@
-import 'package:pokemon_flutter/consts/db.dart';
+import 'package:pokemon_flutter/const/db.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/favorite.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:pokemon_flutter/consts/pokeapi.dart';
+import 'package:pokemon_flutter/const/pokeapi.dart';
 import 'package:pokemon_flutter/models/pokemon.dart';
 
 Future<Pokemon> fetchPokemon(int id) async {
