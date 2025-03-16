@@ -16,16 +16,10 @@ class _PokeListState extends State<PokeList> {
   bool isFavoriteMode = true;
   int _currentPage = 1;
 
-  List<Favorite> favMock = [
-    Favorite(pokeId: 1),
-    Favorite(pokeId: 4),
-    Favorite(pokeId: 7),
-  ];
-
-  int itemCount(int page, int size, int maxId) {
+  int itemCount(int page, int size, int maxId, FavoritesNotifier favs) {
     int ret = page * size;
-    if (isFavoriteMode && ret > favMock.length) {
-      ret = favMock.length;
+    if (isFavoriteMode && ret > favs.favs.length) {
+      ret = favs.favs.length;
     }
     if (ret > maxId) {
       ret = maxId;
@@ -33,17 +27,17 @@ class _PokeListState extends State<PokeList> {
     return ret;
   }
 
-  int itemId(int index) {
+  int itemId(int index, FavoritesNotifier favs) {
     int ret = index + 1;
     if (isFavoriteMode) {
-      ret = favMock[index].pokeId;
+      ret = favs.favs[index].pokeId;
     }
     return ret;
   }
 
-  bool isLastPage(int page) {
+  bool isLastPage(int page, FavoritesNotifier favs) {
     if (isFavoriteMode) {
-      if (_currentPage * pageSize < favMock.length) {
+      if (_currentPage * pageSize < favs.favs.length) {
         return false;
       }
       return true;
@@ -57,63 +51,80 @@ class _PokeListState extends State<PokeList> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          height: 24,
-          alignment: Alignment.topRight,
-          child: IconButton(
-            padding: const EdgeInsets.all(0),
-            icon: const Icon(Icons.auto_awesome_outlined),
-            onPressed: () async {
-              var ret = await showModalBottomSheet<bool>(
-                context: context,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  ),
-                ),
-                builder: (BuildContext context) {
-                  return ViewModeBottomSheet(favMode: isFavoriteMode);
-                },
-              );
-              if (ret != null && ret) {
-                setState(() {
-                  isFavoriteMode = !isFavoriteMode;
-                });
-              }
-            },
-          ),
-        ),
-        Expanded(
-          child: Consumer<PokemonsNotifier>(
-            builder:
-                (context, pokes, child) => ListView.builder(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 4,
-                    horizontal: 16,
-                  ),
-                  itemCount:
-                      itemCount(_currentPage, pageSize, pokeMaxId) +
-                      1, // pokeMaxId,
-                  itemBuilder: (context, index) {
-                    if (index == itemCount(_currentPage, pageSize, pokeMaxId)) {
-                      return OutlinedButton(
-                        child: const Text('more'),
-                        onPressed:
-                            isLastPage(_currentPage)
-                                ? null
-                                : () => {setState(() => _currentPage++)},
-                      );
-                    } else {
-                      return PokeListItem(poke: pokes.byId(itemId(index)));
+    return Consumer<FavoritesNotifier>(
+      builder:
+          (context, favs, child) => Column(
+            children: [
+              Container(
+                height: 24,
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  padding: const EdgeInsets.all(0),
+                  icon: const Icon(Icons.auto_awesome_outlined),
+                  onPressed: () async {
+                    var ret = await showModalBottomSheet<bool>(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(40),
+                          topRight: Radius.circular(40),
+                        ),
+                      ),
+                      builder: (BuildContext context) {
+                        return ViewModeBottomSheet(favMode: isFavoriteMode);
+                      },
+                    );
+                    if (ret != null && ret) {
+                      setState(() {
+                        isFavoriteMode = !isFavoriteMode;
+                      });
                     }
                   },
                 ),
+              ),
+              Expanded(
+                child: Consumer<PokemonsNotifier>(
+                  builder: (context, pokes, child) {
+                    if (itemCount(_currentPage, pageSize, pokeMaxId, favs) ==
+                        0) {
+                      return const Text('no data');
+                    } else {
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 16,
+                        ),
+                        itemCount:
+                            itemCount(_currentPage, pageSize, pokeMaxId, favs) +
+                            1, // pokeMaxId,
+                        itemBuilder: (context, index) {
+                          if (index ==
+                              itemCount(
+                                _currentPage,
+                                pageSize,
+                                pokeMaxId,
+                                favs,
+                              )) {
+                            return OutlinedButton(
+                              child: const Text('more'),
+                              onPressed:
+                                  isLastPage(_currentPage, favs)
+                                      ? null
+                                      : () => {setState(() => _currentPage++)},
+                            );
+                          } else {
+                            return PokeListItem(
+                              poke: pokes.byId(itemId(index, favs)),
+                            );
+                          }
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
     );
   }
 }
